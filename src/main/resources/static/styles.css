@@ -1,0 +1,44 @@
+*, *::after, *::before {
+    margin: 0;
+}
+
+main
+{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+main div
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+main div input
+{
+    margin: 5px;
+    width: 200px;
+    outline: 0;
+}
+
+input
+{
+    color: black;
+}
+
+.label{
+    font-size: 25px;
+}
+
+.acc-ex
+{
+    text-decoration: none;
+}
+.acc-ex:hover
+{
+    text-decoration: underline;
+}

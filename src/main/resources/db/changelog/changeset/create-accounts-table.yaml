@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-accounts-table
+      author: noverlin
+      changes:
+        - createTable:
+            tableName: accounts
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_users_accounts
+                    references: users(id)
+              - column:
+                  name: amount
+                  type: varchar(256)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: is_blocked
+                  type: boolean
+                  constraints:
+                    nullable: false
