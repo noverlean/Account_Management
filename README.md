@@ -5,5 +5,5 @@ postgres must have a database "account_management_db" with chema that has the sa
 ports 5432:5432. 
 username: postgres, password: root.
 
-=== FOR RUN APPICATION ===
-mvn clean package
+=== TO RUN APPICATION ===
+$ mvn clean package
