@@ -7,3 +7,5 @@ username: postgres, password: root.
 
 === TO RUN APPICATION ===
 $ mvn clean package
+
+browser url:    http://localhost:8080/auth.html
