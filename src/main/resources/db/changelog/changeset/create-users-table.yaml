@@ -5,22 +5,23 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: users
+            schemaName: account_management_db
             columns:
               - column:
                   name: id
-                  type: bigint
+                  type: int
                   autoIncrement: true
                   constraints:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: ful_name
+                  name: fullname
                   type: text
                   constraints:
                     nullable: true
               - column:
-                  name: email
-                  type: varchar(256)
+                  name: nickname
+                  type: varchar(255)
                   constraints:
                     nullable: true
               - column:

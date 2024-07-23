@@ -1,12 +1,15 @@
 package com.example.account_management.repository;
 
-import com.example.account_management.entity.Role;
-import org.springframework.data.repository.CrudRepository;
+import com.example.account_management.entity.Account;
+import com.example.account_management.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface RoleRepository extends CrudRepository<Role, Integer> {
-    Optional<Role> findByName(String name);
+public interface AccountRepository extends JpaRepository<Account, Integer> {
+    Optional<Account> findByOwner(User owner);
+    List<Account> findAllByOrderByIdDesc();
 }

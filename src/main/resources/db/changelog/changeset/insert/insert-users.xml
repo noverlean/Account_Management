@@ -7,7 +7,8 @@
     <changeSet logicalFilePath="insert-users"
                id="insert-users" author="noverlin">
         <insert tableName="users">
-            <column  name="email"  value="admin"/>
+            <column  name="fullname"  value="Евгений Семёнов"/>
+            <column  name="nickname"  value="-Hako"/>
             <column  name="password"  value="$2a$04$Fx/SX9.BAvtPlMyIIqqFx.hLY2Xp8nnhpzvEEVINvVpwIPbA3v/.i"/>
         </insert>
 

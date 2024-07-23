@@ -1,8 +1,8 @@
-package unicore.api.repository;
+package com.example.account_management.repository;
 
+import com.example.account_management.entity.Role;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import unicore.api.entities.Role;
 
 import java.util.Optional;
 

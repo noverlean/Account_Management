@@ -5,6 +5,7 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: accounts
+            schemaName: account_management_db
             columns:
               - column:
                   name: id
@@ -14,14 +15,14 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: user_id
+                  name: owner_user_id
                   type: bigint
                   constraints:
                     foreignKeyName: fk_users_accounts
                     references: users(id)
               - column:
                   name: amount
-                  type: varchar(256)
+                  type: bigint
                   constraints:
                     nullable: true
               - column:

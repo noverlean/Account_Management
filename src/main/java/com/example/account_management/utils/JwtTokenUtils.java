@@ -1,4 +1,4 @@
-package unicore.api.utils;
+package com.example.account_management.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

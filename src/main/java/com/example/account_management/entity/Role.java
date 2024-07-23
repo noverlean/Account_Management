@@ -1,4 +1,4 @@
-package unicore.api.entities;
+package com.example.account_management.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -14,4 +14,11 @@ public class Role {
 
     @Column(name = "name")
     private String name;
+
+    public String toString()
+    {
+        return "=== ROLE ================\n\t" +
+                "id: " + id + ", \n\t" +
+                "name: " + name;
+    }
 }

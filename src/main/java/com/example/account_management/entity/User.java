@@ -1,12 +1,11 @@
-package unicore.api.entities;
+package com.example.account_management.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.sql.Date;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Data
@@ -15,24 +14,20 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private Integer id;
+
+    @Column(name = "fullname")
+    private String fullname;
+
+    @Column(name = "nickname")
+    private String nickname;
 
     @Column(name = "password")
     private String password;
 
-    @Column(name = "email")
-    private String email;
-
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "environment_id")
-    private Environment environment;
-
-    @OneToMany (mappedBy="user", fetch=FetchType.EAGER)
-    @OrderBy("changeTimestamp DESC")
-    private Collection<Ticket> tickets;
-
-    @OneToMany (mappedBy="support", fetch=FetchType.EAGER)
-    private Collection<Ticket> supportTickets;
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JsonIgnore
+    private List<Account> accounts;
 
     @ManyToMany
     @JoinTable(
@@ -42,11 +37,13 @@ public class User {
     )
     private Collection<Role> roles;
 
-    public void print()
+    public String toString()
     {
-        System.out.println("========================================");
-        System.out.println("Id      : " + getId());
-        System.out.println("Email   : " + getEmail());
-        System.out.println("========================================");
+        return "=== USER ================\n\t" +
+                "id: " + id + ", \n\t" +
+                "fullname: " + fullname + ", \n\t" +
+                "nickname: " + nickname + ", \n\t" +
+                "password: " + password + ", \n\t" +
+                "roles: " + roles.stream().map(Role::toString);
     }
 }

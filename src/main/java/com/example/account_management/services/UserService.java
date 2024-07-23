@@ -1,129 +1,131 @@
-package unicore.api.service;
+package com.example.account_management.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.account_management.entity.Account;
+import com.example.account_management.entity.User;
+import com.example.account_management.mapper.AccountMapper;
+import com.example.account_management.mapper.UserMapper;
+import com.example.account_management.repository.AccountRepository;
+import com.example.account_management.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.MediaType;
+import org.openapitools.model.AccountDto;
+import org.openapitools.model.UserDto;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import unicore.api.dto.RegistrationCredentials;
-import unicore.api.dto.UserEmailCodeDto;
-import unicore.api.entities.Environment;
-import unicore.api.entities.User;
-import unicore.api.mappers.UserMapper;
-import unicore.api.repository.UserRepository;
 
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     private final UserMapper userMapper;
-    private final RoleService roleService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final AccountMapper accountMapper;
 
-    public Optional<User> findByEmail(String username) {
-        return userRepository.findByEmail(username);
-    }
-
-    //there using username like email for care working of auth hidden code
     @Override
-    @Transactional
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(
-                String.format("Пользователь '%s' не найден", email)
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByNickname(username).orElseThrow(() -> new UsernameNotFoundException(
+                String.format("Пользователь '%s' не найден", username)
         ));
         return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
+                user.getNickname(),
                 user.getPassword(),
                 user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList())
         );
     }
 
-    public User createNewUser(RegistrationCredentials registrationCredentials) {
-        User user = new User();
-        user.setEmail(registrationCredentials.getEmail());
-        user.setPassword(bCryptPasswordEncoder.encode(registrationCredentials.getPassword()));
-        user.setRoles(List.of(roleService.getUserRole()));
-        return userRepository.save(user);
-    }
-
-    public User getUser(String email)
+    public User getUser(String nickname)
     {
-        return findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(
-                String.format("Пользователь '%s' не найден", email)
+        return userRepository.findByNickname(nickname).orElseThrow(() -> new UsernameNotFoundException(
+                String.format("Пользователь '%s' не найден", nickname)
         ));
     }
 
-    public User linkTo(String email, Environment environment) {
-        User user = getUser(email);
-        user.setEnvironment(environment);
-        return userRepository.save(user);
-    }
-
-    public List<User> getAllUsers(String email) {
-        return (List<User>) userRepository.findAll();
-    }
-
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElseGet(null);
-    }
-
-    public ResponseEntity<InputStreamResource> downloadUser(Long id) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writeValueAsString(getUserById(id));
-
-        ByteArrayInputStream stream = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header("Content-Disposition", "attachment; filename=data.txt")
-                .body(new InputStreamResource(stream));
-    }
-
-
-    /* public ResponseEntity<?> setAsAdmin(String username) {
-        try {
-            User user = findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(
-                    String.format("Пользователь '%s' не найден", username)
-            ));
-
-            DBRequestUtils dBRequestUtils = new DBRequestUtils();
-            dBRequestUtils.setAsAdmin(user.getId());
-            return ResponseEntity.ok("ok");
+    @Transactional
+    public ResponseEntity<UserDto> addAccountAmount(String nickname, Integer addAmount, Integer accountId)
+    {
+        User user = userRepository.findByNickname(nickname).orElseThrow(() -> new UsernameNotFoundException(
+                String.format("Пользователь '%s' не найден", nickname)
+        ));
+        Optional<Account> accountOpt = user.getAccounts().stream()
+                .filter(account -> account.getId().equals(accountId))
+                .findAny();
+        if (accountOpt.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        catch (Exception e) {
-            return new ResponseEntity<>(new AppError(HttpStatus.PROCESSING.value(), "Ошибка при попытке получения взаимных лайков пользователя!"), HttpStatus.PROCESSING);
+        Account account = accountOpt.get();
+        if (account.getIsBlocked()) {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
+
+        account.setAmount(account.getAmount() + addAmount);
+        accountRepository.save(account);
+        return ResponseEntity.ok(userMapper.modelToDto(userRepository.save(user)));
     }
 
+    @Transactional
+    public ResponseEntity<UserDto> withdrawAccountAmount(String nickname, Integer withdrawAmount, Integer accountId)
+    {
+        User user = userRepository.findByNickname(nickname).orElseThrow(() -> new UsernameNotFoundException(
+                String.format("Пользователь '%s' не найден", nickname)
+        ));
+        Optional<Account> accountOpt = user.getAccounts().stream()
+                .filter(account -> account.getId().equals(accountId))
+                .findAny();
 
-    public ResponseEntity<?> setAsUser(String username) {
-        try {
-            User user = findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(
-                    String.format("Пользователь '%s' не найден", username)
-            ));
+        if (accountOpt.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Account account = accountOpt.get();
+        if (account.getIsBlocked()) {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
 
-            DBRequestUtils dBRequestUtils = new DBRequestUtils();
-            dBRequestUtils.setAsUser(user.getId());
-            return ResponseEntity.ok("ok");
+        if (account.getAmount() < withdrawAmount)
+        {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        catch (Exception e) {
-            return new ResponseEntity<>(new AppError(HttpStatus.PROCESSING.value(), "Ошибка при попытке получения взаимных лайков пользователя!"), HttpStatus.PROCESSING);
-        }
+        account.setAmount(account.getAmount() - withdrawAmount);
+        accountRepository.save(account);
+        return ResponseEntity.ok(userMapper.modelToDto(userRepository.save(user)));
     }
 
-     */
+    public ResponseEntity<List<AccountDto>> getAllAccounts() {
+        List<AccountDto> accountDtos = accountRepository.findAllByOrderByIdDesc()
+                .stream()
+                .map(accountMapper::modelToDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(accountDtos);
+    }
+
+    public ResponseEntity<List<AccountDto>> blockAccount(Integer accountId) {
+        return changeBlockState(accountId, true);
+    }
+
+    public ResponseEntity<List<AccountDto>> unblockAccount(Integer accountId) {
+        return changeBlockState(accountId, false);
+    }
+
+    private ResponseEntity<List<AccountDto>> changeBlockState(Integer accountId, Boolean newState)
+    {
+        Optional<Account> accountOct = accountRepository.findById(accountId);
+        if (accountOct.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Account account = accountOct.get();
+        if (account.getIsBlocked() == newState) {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+        account.setIsBlocked(newState);
+        accountRepository.save(account);
+        return getAllAccounts();
+    }
 }

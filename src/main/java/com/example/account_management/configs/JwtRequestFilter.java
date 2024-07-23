@@ -1,6 +1,7 @@
-package unicore.api.configs;
+package com.example.account_management.configs;
 
 
+import com.example.account_management.utils.JwtTokenUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
 import jakarta.servlet.FilterChain;
@@ -14,7 +15,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import unicore.api.utils.JwtTokenUtils;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -37,7 +37,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             } catch (ExpiredJwtException e) {
                 log.debug("Время жизни токена вышло");
             } catch (SignatureException e) {
-                log.debug("Подпись неправильная");
+                log.debug("Не удалось авторизировать пользователя");
             }
         }
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

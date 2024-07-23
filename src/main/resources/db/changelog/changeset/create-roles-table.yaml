@@ -5,6 +5,7 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: roles
+            schemaName: account_management_db
             columns:
               - column:
                   name: id

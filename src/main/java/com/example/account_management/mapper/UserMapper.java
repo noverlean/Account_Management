@@ -1,6 +1,6 @@
-package com.example.demo.mapper;
+package com.example.account_management.mapper;
 
-import com.example.demo.repository.entity.User;
+import com.example.account_management.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.openapitools.model.UserDto;
@@ -12,7 +12,7 @@ public interface UserMapper {
 
     User dtoToModel(UserDto user);
 
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "userId", source = "id")
+//    @Mapping(target = "status", ignore = true)
+//    @Mapping(target = "userId", source = "id")
     UserDto modelToDto(User user);
 }

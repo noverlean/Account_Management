@@ -1,0 +1,299 @@
+openapi: 3.0.0
+info:
+  title: Система управления счетами
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080/
+    description: Dev server
+paths:
+  /users/register:
+    post:
+      summary: Метод регистрации нового пользователя
+      tags:
+        - Users
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserDto"
+      responses:
+        '200':
+          description: Успешный ответ с данными пользователя
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        '409':
+          description: Такой пользователь уже существует
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /users/login:
+    post:
+      summary: Авторизация существующего пользователя
+      tags:
+        - Users
+      operationId: loginUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserDto"
+      responses:
+        '200':
+          description: Успешный ответ со списком пользователей
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthDto"
+        '401':
+          description: Неверные данные авторизации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '404':
+          description: Такого пользователя не существует
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /users/fetch:
+    get:
+      summary: Метод получения пользователя по уникальному имени пользователя
+      tags:
+        - Users
+      operationId: getUser
+      parameters:
+        - name: user_nickname
+          in: path
+          required: true
+          description: коротное уникальное имя пользователя
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешный ответ с данными пользователя
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        '404':
+          description: Данного пользователя или счета не существует или он не был найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        'default':
+          description: Все нестандартные ответы
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /users/accounts/{accountId}/add/{addAmount}:
+    post:
+      summary: Метод пополнения счета пользователя
+      tags:
+        - Users
+      operationId: addAccountAmount
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          description: идентификатор счёта
+          schema:
+            type: integer
+        - name: addAmount
+          in: path
+          required: true
+          description: добавляемое значение
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный ответ с данными пользователя
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        '404':
+          description: Данного пользователя или счета не существует или он не был найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        'default':
+          description: Все нестандартные ответы
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /users/accounts/{accountId}/withdraw/{withdrawAmount}:
+    post:
+      summary: Метод списания со счета пользователя
+      tags:
+        - Users
+      operationId: withdrawAccountAmount
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          description: идентификатор счёта
+          schema:
+            type: integer
+        - name: withdrawAmount
+          in: path
+          required: true
+          description: добавляемое значение
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный ответ с данными пользователя
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        '404':
+          description: Данного пользователя или счета не существует или он не был найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        'default':
+          description: Все нестандартные ответы
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /users/accounts:
+    get:
+      summary: Метод получения списка всех счетов
+      tags:
+        - Users
+      operationId: getAllAccounts
+      responses:
+        '200':
+          description: Успешный ответ с данными всех аккаунтов
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Accounts"
+        'default':
+          description: Все нестандартные ответы
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /users/accounts/{accountId}/block:
+    post:
+      summary: Метод блокировки счета
+      tags:
+        - Users
+      operationId: blockAccount
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          description: идентификатор счёта
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный ответ с данными счетов
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Accounts"
+        'default':
+          description: Все нестандартные ответы
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /users/accounts/{accountId}/unblock:
+    post:
+      summary: Метод разблокировки счета
+      tags:
+        - Users
+      operationId: unblockAccount
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          description: идентификатор счёта
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный ответ с данными счетов
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Accounts"
+        'default':
+          description: Все нестандартные ответы
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    AuthDto:
+      type: object
+      properties:
+        nickname:
+          type: string
+          example: "-Hako"
+        jwt:
+          type: string
+    AccountDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        amount:
+          type: integer
+          format: int64
+          example: 1
+        isBlocked:
+          type: boolean
+          example: false
+    UserDto:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        fullname:
+          type: string
+          example: "Евгений Семёнов"
+        nickname:
+          type: string
+          example: "-Hako"
+        password:
+          type: string
+        accounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/AccountDto"
+    Users:
+      type: array
+      items:
+        $ref: "#/components/schemas/UserDto"
+    Accounts:
+      type: array
+      items:
+        $ref: "#/components/schemas/AccountDto"
+    Error:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: integer
+          example: 400
