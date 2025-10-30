@@ -1,14 +1,66 @@
-I finally done docker image. You can clone project, execute "docker-compose up --build".
+# 💳 Account Management — Технический тест: симулятор банковского счёта
 
-browser url:    http://localhost:8080/auth.html
+Account Management — это симулятор банковского счёта, разработанный как техническое задание. Приложение демонстрирует базовые операции с балансом, обработку состояний пользователя и защиту от действий при блокировке.
 
-=== ADMIN CREDENTIALS ===
-login: -Hako 
-password: 100
+---
 
-setting to manual check
-=== POSTGRES SETTINGS ===
-postgres must have a database "account_management_db" with chema that has the same name. 
-ports 5432:5432. 
-username: postgres, password: root.
+## ⚙️ Функциональность
 
+### 👤 Пользователь
+
+- Создание нового пользователя
+- Просмотр информации о пользователе
+- Блокировка пользователя (например, по решению администратора)
+- Проверка состояния блокировки перед выполнением операций
+
+### 💰 Баланс
+
+- Пополнение счёта на заданную сумму
+- Снятие средств со счёта (если достаточно средств)
+- Проверка текущего баланса
+- Защита от операций, если пользователь заблокирован
+
+---
+
+## 🛠️ Технологии
+
+- Java 17+
+- Spring Boot
+- REST API
+- PostgreSQL
+- Liquibase
+- Docker
+
+---
+
+## 🚀 Быстрый старт
+
+1. Клонируйте репозиторий:
+   ```bash
+   git clone https://github.com/noverlean/Account_Management.git
+   cd Account_Management
+   ```
+   
+2. Запустите проект через Docker:
+```
+bash
+docker-compose up --build
+```
+3. Откройте в браузере:
+
+```Код
+http://localhost:8080/auth.html
+```
+
+🔐 Доступ администратора
+```Код
+Логин:    -Hako
+Пароль:   100
+```
+
+##🗄️ Настройки PostgreSQL
+- База данных: account_management_db
+- Схема: account_management_db
+- Порт: 5432:5432
+- Имя пользователя: postgres
+- Пароль: root
