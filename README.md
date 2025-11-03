@@ -62,6 +62,8 @@ Login:    -Hako
 Password:   100
 ```
 
+---
+
 ##🗄️ PostgreSQL Settings
 - Database: account_management_db
 - Schema: account_management_db
